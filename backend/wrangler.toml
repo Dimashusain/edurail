@@ -1,10 +1,15 @@
 name = "edurail-backend"
 main = "index.js"
 compatibility_date = "2026-07-09"
+workers_dev = true
 compatibility_flags = [
   "nodejs_compat",
   "enable_nodejs_http_server_modules"
 ]
+
+[[routes]]
+pattern = "api.edurailid.my.id"
+custom_domain = true
 
 [vars]
 PORT = "5000"
