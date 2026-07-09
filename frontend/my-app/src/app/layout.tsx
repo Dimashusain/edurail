@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import IntroLoader from "@/components/IntroLoader";
 import { ReactNode } from "react";
+import { ModalProvider } from "@/context/ModalContext";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -21,12 +22,14 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${sora.variable}`}>
       <body className="font-sans bg-[#101415] text-[#f3f4f6] min-h-screen flex flex-col antialiased">
-        <IntroLoader />
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+        <ModalProvider>
+          <IntroLoader />
+          <Navbar />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </ModalProvider>
       </body>
     </html>
   );

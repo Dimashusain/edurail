@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import api from "@/services/api";
 import { Kereta } from "@/types/kereta";
 import Card from "@/components/Card";
+import { useModal } from "@/context/ModalContext";
 
 export default function AdminKeretaPage() {
+  const { showAlert, showConfirm } = useModal();
   const [data, setData] = useState<Kereta[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +48,7 @@ export default function AdminKeretaPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nama || !jenis) {
-      alert("Nama kereta dan jenis kereta wajib diisi.");
+      showAlert("Nama kereta dan jenis kereta wajib diisi.", { variant: "warning" });
       return;
     }
 
@@ -63,15 +65,17 @@ export default function AdminKeretaPage() {
 
       if (editingId) {
         await api.put(`/kereta/${editingId}`, formData);
+        showAlert("Data kereta berhasil diperbarui.", { variant: "success", title: "Berhasil" });
       } else {
         await api.post("/kereta", formData);
+        showAlert("Data kereta berhasil ditambahkan.", { variant: "success", title: "Berhasil" });
       }
 
       resetForm();
       fetchData();
     } catch (error) {
       console.error(error);
-      alert("Gagal menyimpan data kereta.");
+      showAlert("Gagal menyimpan data kereta.", { variant: "danger" });
     } finally {
       setSubmitting(false);
     }
@@ -86,16 +90,22 @@ export default function AdminKeretaPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus data kereta ini?")) {
+    const confirmDelete = await showConfirm("Apakah Anda yakin ingin menghapus data kereta ini?", {
+      variant: "danger",
+      confirmText: "Hapus Kereta",
+      title: "Konfirmasi Hapus"
+    });
+    if (!confirmDelete) {
       return;
     }
 
     try {
       await api.delete(`/kereta/${id}`);
       fetchData();
+      showAlert("Data kereta berhasil dihapus.", { variant: "success", title: "Berhasil" });
     } catch (error) {
       console.error(error);
-      alert("Gagal menghapus data.");
+      showAlert("Gagal menghapus data.", { variant: "danger" });
     }
   };
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import api from "@/services/api";
 import Card from "@/components/Card";
+import { useModal } from "@/context/ModalContext";
 
 interface Semboyan {
   id: number;
@@ -14,6 +15,7 @@ interface Semboyan {
 }
 
 export default function AdminSemboyanPage() {
+  const { showAlert, showConfirm } = useModal();
   const [data, setData] = useState<Semboyan[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -64,7 +66,7 @@ export default function AdminSemboyanPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nama || !arti) {
-      alert("Nama semboyan dan arti wajib diisi.");
+      showAlert("Nama semboyan dan arti wajib diisi.", { variant: "warning" });
       return;
     }
 
@@ -81,15 +83,17 @@ export default function AdminSemboyanPage() {
 
       if (editingId) {
         await api.put(`/semboyan/${editingId}`, formData);
+        showAlert("Data semboyan berhasil diperbarui.", { variant: "success", title: "Berhasil" });
       } else {
         await api.post("/semboyan", formData);
+        showAlert("Data semboyan berhasil ditambahkan.", { variant: "success", title: "Berhasil" });
       }
 
       resetForm();
       fetchData();
     } catch (error) {
       console.error(error);
-      alert("Gagal menyimpan data semboyan.");
+      showAlert("Gagal menyimpan data semboyan.", { variant: "danger" });
     } finally {
       setSubmitting(false);
     }
@@ -105,16 +109,22 @@ export default function AdminSemboyanPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus data semboyan ini?")) {
+    const confirmDelete = await showConfirm("Apakah Anda yakin ingin menghapus data semboyan ini?", {
+      variant: "danger",
+      confirmText: "Hapus Semboyan",
+      title: "Konfirmasi Hapus"
+    });
+    if (!confirmDelete) {
       return;
     }
 
     try {
       await api.delete(`/semboyan/${id}`);
       fetchData();
+      showAlert("Data semboyan berhasil dihapus.", { variant: "success", title: "Berhasil" });
     } catch (error) {
       console.error(error);
-      alert("Gagal menghapus data.");
+      showAlert("Gagal menghapus data.", { variant: "danger" });
     }
   };
 

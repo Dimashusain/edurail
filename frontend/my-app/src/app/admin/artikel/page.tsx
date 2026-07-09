@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import api from "@/services/api";
 import { Artikel } from "@/types/artikel";
 import Card from "@/components/Card";
+import { useModal } from "@/context/ModalContext";
 
 export default function AdminArtikelPage() {
+  const { showAlert, showConfirm } = useModal();
   const [data, setData] = useState<Artikel[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -42,7 +44,7 @@ export default function AdminArtikelPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!judul || !isi || !tanggal) {
-      alert("Semua field formulir artikel wajib diisi.");
+      showAlert("Semua field formulir artikel wajib diisi.", { variant: "warning" });
       return;
     }
 
@@ -56,15 +58,17 @@ export default function AdminArtikelPage() {
 
       if (editingId) {
         await api.put(`/artikel/${editingId}`, payload);
+        showAlert("Artikel berhasil diperbarui.", { variant: "success", title: "Berhasil" });
       } else {
         await api.post("/artikel", payload);
+        showAlert("Artikel berhasil ditambahkan.", { variant: "success", title: "Berhasil" });
       }
 
       resetForm();
       fetchData();
     } catch (error) {
       console.error(error);
-      alert("Gagal menyimpan artikel.");
+      showAlert("Gagal menyimpan artikel.", { variant: "danger" });
     } finally {
       setSubmitting(false);
     }
@@ -78,16 +82,22 @@ export default function AdminArtikelPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus artikel ini?")) {
+    const confirmDelete = await showConfirm("Apakah Anda yakin ingin menghapus artikel ini?", {
+      variant: "danger",
+      confirmText: "Hapus Artikel",
+      title: "Konfirmasi Hapus"
+    });
+    if (!confirmDelete) {
       return;
     }
 
     try {
       await api.delete(`/artikel/${id}`);
       fetchData();
+      showAlert("Artikel berhasil dihapus.", { variant: "success", title: "Berhasil" });
     } catch (error) {
       console.error(error);
-      alert("Gagal menghapus artikel.");
+      showAlert("Gagal menghapus artikel.", { variant: "danger" });
     }
   };
 

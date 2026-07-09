@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import api from "@/services/api";
 import Link from "next/link";
 import Card from "@/components/Card";
+import { useModal } from "@/context/ModalContext";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { showAlert } = useModal();
 
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
@@ -27,7 +29,7 @@ export default function RegisterPage() {
         password,
       });
 
-      alert("Registrasi Admin berhasil! Silakan login.");
+      await showAlert("Registrasi Admin berhasil! Silakan login.", { variant: "success", title: "Berhasil" });
       router.push("/login");
     } catch (error: any) {
       setErrorMsg(
