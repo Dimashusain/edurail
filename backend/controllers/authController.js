@@ -14,60 +14,10 @@ const COOKIE_OPTIONS = {
 };
 
 const register = async (req, res) => {
-    try {
-
-        const { nama, email, password } = req.body;
-
-        if (!nama || !email || !password) {
-            return res.status(400).json({
-                message: 'Semua field wajib diisi'
-            });
-        }
-
-        
-        const { data: existingUser } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', email)
-            .maybeSingle();
-
-        if (existingUser) {
-            return res.status(400).json({
-                message: 'Email sudah digunakan'
-            });
-        }
-
-        const hashedPassword =
-            await bcrypt.hash(password, 10);
-
-        const { data, error } = await supabase
-            .from('users')
-            .insert([
-                {
-                    nama,
-                    email,
-                    password: hashedPassword,
-                    role: 'admin'
-                }
-            ])
-            .select();
-
-        if (error) throw error;
-
-        res.status(201).json({
-            success: true,
-            message: 'Admin berhasil didaftarkan',
-            data
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
-    }
+    return res.status(403).json({
+        success: false,
+        message: 'Registrasi ditutup. Hanya Administrator yang diizinkan untuk login.'
+    });
 };
 
 
