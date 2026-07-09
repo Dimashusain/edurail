@@ -1,0 +1,387 @@
+openapi: 3.0.0
+
+info:
+  title: EduRail API
+  version: 1.0.0
+  description: API Website Edukasi Perkeretaapian EduRail
+
+servers:
+  - url: http://localhost:5000/api
+
+tags:
+  - name: Auth
+  - name: Semboyan
+  - name: Kereta
+  - name: Artikel
+
+paths:
+
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+
+      responses:
+        '201':
+          description: Admin berhasil didaftarkan
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+
+      responses:
+        '200':
+          description: Login berhasil
+
+  /semboyan:
+    get:
+      tags:
+        - Semboyan
+      summary: Ambil semua data semboyan
+      responses:
+        '200':
+          description: Success
+
+    post:
+      tags:
+        - Semboyan
+      summary: Tambah semboyan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Semboyan'
+
+      responses:
+        '201':
+          description: Data berhasil ditambahkan
+
+  /semboyan/{id}:
+    get:
+      tags:
+        - Semboyan
+      summary: Ambil detail semboyan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Success
+
+    put:
+      tags:
+        - Semboyan
+      summary: Update semboyan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Semboyan'
+
+      responses:
+        '200':
+          description: Data berhasil diubah
+
+    delete:
+      tags:
+        - Semboyan
+      summary: Hapus semboyan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Data berhasil dihapus
+
+  /kereta:
+    get:
+      tags:
+        - Kereta
+      summary: Ambil semua data kereta
+      responses:
+        '200':
+          description: Success
+
+    post:
+      tags:
+        - Kereta
+      summary: Tambah data kereta
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kereta'
+
+      responses:
+        '201':
+          description: Data berhasil ditambahkan
+
+  /kereta/{id}:
+    get:
+      tags:
+        - Kereta
+      summary: Detail kereta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Success
+
+    put:
+      tags:
+        - Kereta
+      summary: Update kereta
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kereta'
+
+      responses:
+        '200':
+          description: Berhasil update
+
+    delete:
+      tags:
+        - Kereta
+      summary: Hapus kereta
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Berhasil hapus
+
+  /artikel:
+    get:
+      tags:
+        - Artikel
+      summary: Ambil semua artikel
+      responses:
+        '200':
+          description: Success
+
+    post:
+      tags:
+        - Artikel
+      summary: Tambah artikel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Artikel'
+
+      responses:
+        '201':
+          description: Berhasil ditambahkan
+
+  /artikel/{id}:
+    get:
+      tags:
+        - Artikel
+      summary: Detail artikel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Success
+
+    put:
+      tags:
+        - Artikel
+      summary: Update artikel
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Artikel'
+
+      responses:
+        '200':
+          description: Berhasil update
+
+    delete:
+      tags:
+        - Artikel
+      summary: Hapus artikel
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Berhasil hapus
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    Register:
+      type: object
+      required:
+        - nama
+        - email
+        - password
+      properties:
+        nama:
+          type: string
+          example: Administrator
+        email:
+          type: string
+          example: admin@edurail.com
+        password:
+          type: string
+          example: admin123
+
+    Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: admin@edurail.com
+        password:
+          type: string
+          example: admin123
+
+    Semboyan:
+      type: object
+      properties:
+        nama:
+          type: string
+          example: Semboyan 35
+        arti:
+          type: string
+          example: Berhenti
+        gambar:
+          type: string
+          example: https://example.com/semboyan35.png
+        deskripsi:
+          type: string
+          example: Kereta harus berhenti
+        warna:
+          type: string
+          example: Merah
+
+    Kereta:
+      type: object
+      properties:
+        nama:
+          type: string
+          example: Argo Bromo Anggrek
+        jenis:
+          type: string
+          example: Kereta Penumpang
+        gambar:
+          type: string
+          example: https://example.com/argo.jpg
+        deskripsi:
+          type: string
+          example: Kereta api kelas eksekutif
+
+    Artikel:
+      type: object
+      properties:
+        judul:
+          type: string
+          example: Mengenal Semboyan 35
+        isi:
+          type: string
+          example: Semboyan 35 digunakan untuk...
+        tanggal:
+          type: string
+          format: date
+          example: 2026-06-10
