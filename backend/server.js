@@ -15,9 +15,19 @@ const cookieParser =
 
 app.use(cookieParser());
 
+const ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. curl, Postman)
+      if (!origin) return callback(null, true);
+      if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: Origin ${origin} tidak diizinkan`));
+    },
     credentials: true,
   })
 );
@@ -54,6 +64,10 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`🚆 EduRail API running on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚆 EduRail API running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
